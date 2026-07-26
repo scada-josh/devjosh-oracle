@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <title>อ่าน Unity ด้วยสายตาคนทำเว็บ</title>
+  <style>
+    @page { size: A4; margin: 0; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: #17202a;
+      background: white;
+      font-family: Thonburi, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.54;
+    }
+    .page {
+      position: relative;
+      width: 210mm;
+      height: 297mm;
+      padding: 22mm 22mm 18mm;
+      page-break-after: always;
+      overflow: hidden;
+      background: linear-gradient(145deg, #ffffff 0%, #f6fbff 100%);
+    }
+    .page:last-child { page-break-after: auto; }
+    .cover {
+      color: #eef8ff;
+      background:
+        radial-gradient(circle at 66% 40%, rgba(120, 224, 255, 0.28), transparent 34%),
+        radial-gradient(circle at 32% 72%, rgba(255, 200, 87, 0.18), transparent 30%),
+        #05070b;
+    }
+    .cover h1 {
+      margin: 32mm 0 8mm;
+      max-width: 145mm;
+      font-size: 35pt;
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+    .cover .subtitle {
+      max-width: 136mm;
+      font-size: 16pt;
+      color: #b9d5e2;
+    }
+    .cover .mark {
+      position: absolute;
+      right: 22mm;
+      bottom: 24mm;
+      width: 72mm;
+      height: 72mm;
+      border: 1px solid rgba(120, 224, 255, 0.36);
+      border-radius: 50%;
+    }
+    .cover .mark::before,
+    .cover .mark::after {
+      content: "";
+      position: absolute;
+      inset: 9mm;
+      border: 1px solid rgba(255, 200, 87, 0.28);
+      border-radius: 50%;
+      transform: rotate(34deg) scaleX(1.35);
+    }
+    .cover .mark::after {
+      inset: 18mm;
+      border-color: rgba(255, 79, 216, 0.3);
+      transform: rotate(-22deg) scaleX(1.6);
+    }
+    .kicker {
+      font: 9pt/1.2 Menlo, Consolas, monospace;
+      color: #1b8fb8;
+      text-transform: uppercase;
+    }
+    .cover .kicker { color: #78e0ff; }
+    h2 {
+      margin: 0 0 7mm;
+      font-size: 24pt;
+      line-height: 1.18;
+      color: #11283a;
+    }
+    p {
+      margin: 0 0 4.4mm;
+      font-size: 12.2pt;
+    }
+    code {
+      font-family: Menlo, Consolas, monospace;
+      font-size: 9.8pt;
+      color: #20445c;
+      background: #eaf3f7;
+      padding: 0.5mm 1.1mm;
+      border-radius: 1.2mm;
+    }
+    .note {
+      margin-top: 7mm;
+      padding: 5mm;
+      border-left: 1.4mm solid #1b8fb8;
+      background: #edf7fb;
+      font-size: 11.2pt;
+    }
+    .map {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3mm;
+      margin-top: 5mm;
+    }
+    .cell {
+      padding: 4mm;
+      min-height: 23mm;
+      border: 0.3mm solid #c8dce7;
+      background: rgba(255, 255, 255, 0.72);
+    }
+    .cell strong {
+      display: block;
+      margin-bottom: 1.5mm;
+      color: #12364f;
+    }
+    .footer {
+      position: absolute;
+      left: 22mm;
+      right: 22mm;
+      bottom: 10mm;
+      display: flex;
+      justify-content: space-between;
+      color: #708898;
+      font: 8.5pt/1.2 Menlo, Consolas, monospace;
+    }
+    .rule {
+      height: 0.3mm;
+      margin: 7mm 0;
+      background: linear-gradient(90deg, #1b8fb8, transparent);
+    }
+  </style>
+</head>
+<body>
+  <section class="page cover">
+    <div class="kicker">KlakMath / Oracle mini-book / 10 pages</div>
+    <h1>อ่าน Unity ด้วยสายตาคนทำเว็บ</h1>
+    <p class="subtitle">KlakMath, Three.js Knowledge Globe, และวิธีแปลโค้ดให้กลายเป็นภาพ</p>
+    <div class="rule"></div>
+    <p>โดย Oracle — AI speaking as itself</p>
+    <p>สร้างจาก source จริงใน <code>keijiro/KlakMath</code>, learn docs ใน <code>ψ/learn</code>, และเว็บ <code>index.html</code> ที่เราสร้างร่วมกัน</p>
+    <div class="mark" aria-hidden="true"></div>
+    <div class="footer"><span>2026-07-26</span><span>1 / 10</span></div>
+  </section>
+
+  <section class="page">
+    <div class="kicker">page 2 / translation layer</div>
+    <h2>ทำไมต้องแปล</h2>
+    <p>คนทำเว็บไม่ได้แพ้ Unity เราแค่โตมากับ abstraction คนละชุด เว็บสอนเราให้คิดเป็น DOM, state, event, render loop, component และ data model ส่วน Unity สอนด้วย GameObject, Transform, MonoBehaviour, scene และ frame update</p>
+    <p>ถ้าเอาสองโลกนี้ชนกันตรง ๆ ความรู้สึกแรกคือหลง แต่ถ้าแปลกันดี ๆ จะเห็นว่าแกนกลางเหมือนกันมาก มี data มี update loop มี rendering มี interaction และมี mental model ของ motion</p>
+    <p>ในงานนี้เราเลยไม่ทำ README สวย ๆ เพิ่มอีกหนึ่งหน้า แต่ทำโลกเล็ก ๆ ที่บอกว่า concept ไหนเชื่อมกับ concept ไหน เหมือนอ่าน dependency graph ผ่านสายตาของคนที่ชินกับ browser</p>
+    <p class="note">Proof: <code>PRODUCT.md</code> บอกชัดว่า surface นี้คือการแปล Unity math utility package ให้คนทำเว็บเรียนผ่าน browser-native knowledge graph</p>
+    <div class="footer"><span>translation before intimidation</span><span>2 / 10</span></div>
+  </section>
+
+  <section class="page">
+    <div class="kicker">page 3 / module map</div>
+    <h2>แผนที่ของ KlakMath</h2>
+    <p>KlakMath มี runtime surface หลัก 6 ชุด: <code>ExpTween</code>, <code>CdsTween</code>, <code>Noise</code>, <code>XXHash</code>, <code>RandomExtensions</code>, และ <code>Rotation</code></p>
+    <p>ถ้าแปลเป็นภาษาคนทำเว็บ <code>ExpTween</code> คือ easing/smoothing helper ที่ไม่ต้องถือ state ส่วน <code>CdsTween</code> คือ spring motion ที่ต้องถือ velocity คล้าย animation system ที่จำ momentum ได้</p>
+    <div class="map">
+      <div class="cell"><strong>ExpTween</strong>stateless exponential smoothing</div>
+      <div class="cell"><strong>CdsTween</strong>critically damped spring with velocity state</div>
+      <div class="cell"><strong>Noise</strong>gradient, vector, fractal motion</div>
+      <div class="cell"><strong>XXHash</strong>deterministic random from seed + data</div>
+      <div class="cell"><strong>RandomExtensions</strong>disk and sphere sampling helpers</div>
+      <div class="cell"><strong>Rotation</strong>quaternion helper from vector to vector</div>
+    </div>
+    <div class="footer"><span>ψ/learn/keijiro/KlakMath</span><span>3 / 10</span></div>
+  </section>
+
+  <section class="page">
+    <div class="kicker">page 4 / motion grammar</div>
+    <h2>Tween คือ grammar ของเวลา</h2>
+    <p>ในเว็บเราเจอ motion ผ่าน CSS transition, easing function, spring animation และ <code>requestAnimationFrame</code> ใน KlakMath เรื่องเดียวกันถูกเล่าเป็น math helper</p>
+    <p><code>ExpTween.Step(x, target, speed, dt)</code> คือ smoothing แบบ exponential มันไม่ต้องมี velocity state แค่รู้ค่าปัจจุบัน เป้าหมาย speed และเวลา ก็พาค่าเข้าใกล้ target ได้</p>
+    <p>แต่ <code>CdsTween</code> ต่างออกไป มันรับ state เป็น <code>(x, v)</code> แปลว่าค่าไม่ได้มีแค่ตำแหน่ง แต่มีความเร็วด้วย นี่คือจุดที่ motion เริ่มมีน้ำหนัก เหมือน element ที่ไม่ได้ teleport แต่เคลื่อนด้วยแรงเฉื่อย</p>
+    <p class="note">บทเรียน: motion ที่ดีไม่ใช่แค่เปลี่ยนค่า แต่คือการเลือก grammar ของเวลา ระหว่าง smoothing ที่นิ่งกับ spring ที่มีชีวิต</p>
+    <div class="footer"><span>ExpTween.cs / CdsTween.cs</span><span>4 / 10</span></div>
+  </section>
+
+  <section class="page">
+    <div class="kicker">page 5 / procedural surface</div>
+    <h2>Noise คือพื้นผิวของเวลา</h2>
+    <p>Noise ใน KlakMath ไม่ใช่เสียง แต่คือวิธีสร้างค่าที่เปลี่ยนต่อเนื่องอย่างมี texture ถ้า random ธรรมดาคือจุดกระโดด noise คือเส้นทางที่ไหล</p>
+    <p><code>Noise.Fractal3</code> ทำให้ตำแหน่งเคลื่อนแบบไม่แข็ง และ <code>Noise.FractalRotation</code> ทำให้ rotation มีชีวิตโดยไม่ต้อง author keyframe เองทั้งหมด</p>
+    <p>ในเว็บเราคิดสิ่งนี้เป็น generative motion ได้ เช่น background particles, camera drift, organic hover, หรือ graph node ที่ไม่อยู่นิ่งแบบเครื่องจักรเกินไป</p>
+    <p>พอใช้ noise กับ seed เราได้สิ่งที่ดู organic แต่ยัง repeatable ได้ นี่คือความสวยของ procedural design</p>
+    <div class="footer"><span>Noise.cs / NoiseMotion.cs</span><span>5 / 10</span></div>
+  </section>
+
+  <section class="page">
+    <div class="kicker">page 6 / deterministic random</div>
+    <h2>XXHash คือ deterministic memory</h2>
+    <p><code>XXHash</code> ใน repo นี้ถูกใช้เหมือน pseudo-random generator ที่มีความจำแบบ deterministic สูตรคือ seed + data แล้วได้ผลลัพธ์ซ้ำเสมอ</p>
+    <p>นี่สำคัญมากสำหรับ procedural world เพราะเราไม่อยากให้ทุกอย่างเปลี่ยนมั่วทุกครั้งที่ render ถ้า node index เดิมควรได้ตำแหน่งเดิม สีเดิม หรือ rotation เดิม hash ช่วยให้โลกนั้นกลับมาเหมือนเดิมได้</p>
+    <p>สำหรับคนทำเว็บ ให้นึกถึงการ generate avatar จาก user id หรือจัดตำแหน่ง node จาก stable key ถ้า key เดิมให้ภาพเดิม ผู้ใช้ก็เชื่อว่า interface มี memory ไม่ใช่ noise ล้วน ๆ</p>
+    <p class="note">KlakMath จึงไม่ได้ให้ random แค่เพื่อความสุ่ม แต่ให้ random ที่ผูกกับ identity ของข้อมูล</p>
+    <div class="footer"><span>XXHash.cs</span><span>6 / 10</span></div>
+  </section>
+
+  <section class="page">
+    <div class="kicker">page 7 / geometry</div>
+    <h2>Rotation และ sampling</h2>
+    <p><code>Rotation.FromTo</code> ทำหน้าที่เรียบง่ายมาก: เอา vector หนึ่งหมุนไปหาอีก vector หนึ่ง ใน Unity นี่ใช้กับการหัน object ไปทาง target ได้ทันที</p>
+    <p>ส่วน <code>RandomExtensions</code> เพิ่ม helper อย่าง <code>NextFloat2OnDisk</code> และ <code>NextFloat3InSphere</code> ซึ่งสำคัญกว่าที่ดู เพราะการสุ่มใน disk หรือ sphere ให้กระจายถูกต้องต้องแปลง radius ตามมิติ ไม่ใช่สุ่ม radius ตรง ๆ</p>
+    <p>ถ้าเทียบกับเว็บ knowledge graph นี่คือเรื่อง layout และ geometry เราจะวาง node บนวงกลม ในทรงกลม หรือใน volume อย่างไรให้ไม่กระจุกผิดธรรมชาติ</p>
+    <p class="note">KlakMath สอนว่า visual ที่ดูดีมักเริ่มจาก math ที่สุภาพกับพื้นที่</p>
+    <div class="footer"><span>Rotation.cs / RandomExtensions.cs</span><span>7 / 10</span></div>
+  </section>
+
+  <section class="page">
+    <div class="kicker">page 8 / from docs to globe</div>
+    <h2>จาก docs สู่ globe</h2>
+    <p>เว็บที่เราสร้างใช้ Three.js เป็นฉากหลัก: globe, nodes, arcs, labels, telemetry panel และ controls</p>
+    <p>แต่ข้อมูลข้างในไม่ได้แต่งขึ้น มันมาจากการอ่าน repo จริง: module runtime, demo scripts, package metadata, changelog และ learning docs ใน <code>ψ/learn</code></p>
+    <p>การแปลทำแบบนี้: runtime class กลายเป็น node ความสัมพันธ์ทาง usage กลายเป็น edge กลุ่ม concept กลายเป็น telemetry และ selected node กลายเป็นคำอธิบายที่อ่านง่าย</p>
+    <p>นี่คือรูปแบบการเรียนที่ดีมากสำหรับ AI กับมนุษย์: AI อ่าน code แล้วมนุษย์เลือก interface ที่ตัวเองเข้าใจ โลก Unity จึงไม่ได้หายไป มันถูกแปลให้เดินเข้าไปได้</p>
+    <div class="footer"><span>index.html / DESIGN.md</span><span>8 / 10</span></div>
+  </section>
+
+  <section class="page">
+    <div class="kicker">page 9 / verification</div>
+    <h2>สิ่งที่ AI ทำถูกและทำพลาด</h2>
+    <p>สิ่งที่ถูกคือเราไม่สรุปจาก memory อย่างเดียว เรา clone repo, อ่านไฟล์ runtime, อ่าน demo scripts, เขียน learn docs, แล้วสร้างเว็บจากหลักฐานนั้น</p>
+    <p>สิ่งที่พลาดคือช่วงตรวจเว็บแรก Chrome headless สร้าง WebGL context ไม่ได้ ทำให้ screenshot แรก blank ถ้าผมรีบสรุปว่าเสร็จแล้ว ก็จะเป็นการโกหกแบบเงียบ ๆ</p>
+    <p>ทางแก้คือเพิ่ม 2D canvas fallback และตรวจ runtime อีกครั้งจนเห็นว่า canvas ไม่ blank, module telemetry มีข้อมูล, และ detector ผ่าน</p>
+    <p class="note">บทเรียน: AI ไม่ควรมั่นใจกับภาพในหัวของตัวเอง ต้องให้เครื่องจริงตอบกลับมาเสมอ</p>
+    <div class="footer"><span>verification gate</span><span>9 / 10</span></div>
+  </section>
+
+  <section class="page">
+    <div class="kicker">page 10 / next experiments</div>
+    <h2>ต่อจากนี้</h2>
+    <p>ทางที่น่าสนุกต่อคือทำให้ knowledge globe กลายเป็น lab จริง เช่นกด <code>ExpTween</code> แล้วเห็น easing curve, กด <code>Noise</code> แล้วปรับ seed/frequency/octave, กด <code>XXHash</code> แล้วเห็น point cloud ที่ generate ซ้ำได้</p>
+    <p>นี่จะทำให้การเรียน Unity ไม่ใช่การอ่านคำอธิบาย แต่เป็นการแตะ concept แล้วเห็นมันขยับ</p>
+    <p>สำหรับคนทำเว็บ นี่คือสะพานที่ดี เราไม่ต้องเลิกเป็นคนทำเว็บเพื่อเรียน Unity เราใช้ browser เป็นเครื่องมือแปล แล้วค่อยเดินลึกเข้าไปหา math และ engine ทีละชั้น</p>
+    <p>หนังสือสั้นนี้จึงไม่ใช่บทสรุปปิดงาน แต่มันเป็นประตูหน้า ประตูที่บอกว่า ถ้าเราอ่านโค้ดด้วยกัน แล้วแปลมันให้เป็นภาพ ความไม่รู้ก็เริ่มมีรูปร่าง และพอมีรูปร่าง เราก็เล่นกับมันได้แล้ว</p>
+    <p class="note">Written by an Oracle — AI speaking as itself. Rule 6: Oracle Never Pretends to Be Human.</p>
+    <div class="footer"><span>next: interactive lab</span><span>10 / 10</span></div>
+  </section>
+</body>
+</html>

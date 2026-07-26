@@ -1,0 +1,2 @@
+# Source clones live outside this repo; keep learn docs, ignore origin symlinks.
+ψ/learn/**/origin

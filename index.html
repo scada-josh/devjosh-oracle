@@ -1,0 +1,854 @@
+<!doctype html>
+<!--
+THESIS: Teach a Unity math repo through a browser-native knowledge globe, refusing a static README recap.
+OWN-WORLD: Dark tactical observatory, cyan/amber/magenta/green signals, compact telemetry, full-bleed WebGL.
+STORY: A web developer sees KlakMath as connected concepts, hovers modules, and maps API purpose to source files.
+FIRST VIEWPORT: Canvas fills the screen; identity and selected node sit left, module telemetry right, controls at bottom.
+FORM: Experience surface, chosen directly from the user's JARVIS knowledge-graph brief; no seed round was used.
+-->
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KlakMath Knowledge Globe</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --void: #05070b;
+      --panel: rgba(7, 13, 20, 0.78);
+      --panel-strong: rgba(9, 20, 30, 0.9);
+      --text: #eef8ff;
+      --muted: #9db6c4;
+      --cyan: #78e0ff;
+      --amber: #ffc857;
+      --magenta: #ff4fd8;
+      --green: #69f0ae;
+      --line: rgba(120, 224, 255, 0.28);
+      --danger: #ff6b6b;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      background: var(--void);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    body {
+      background: #05070b;
+    }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      min-height: 620px;
+      isolation: isolate;
+    }
+
+    #scene {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: grab;
+    }
+
+    #scene:active {
+      cursor: grabbing;
+    }
+
+    .hud {
+      position: absolute;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .topline {
+      top: 18px;
+      left: 18px;
+      right: 18px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .brand {
+      max-width: 620px;
+      padding: 18px 18px 16px;
+      border: 1px solid rgba(120, 224, 255, 0.2);
+      background: var(--panel);
+      box-shadow: 0 22px 80px rgba(0, 0, 0, 0.42);
+      backdrop-filter: blur(14px);
+      pointer-events: auto;
+    }
+
+    .kicker,
+    .readout-label,
+    .node-type,
+    .mode-chip {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 11px;
+      line-height: 1.2;
+      color: var(--cyan);
+      letter-spacing: 0;
+    }
+
+    h1 {
+      margin: 8px 0 10px;
+      max-width: 11ch;
+      font-size: clamp(40px, 8vw, 92px);
+      line-height: 0.9;
+      font-weight: 760;
+      letter-spacing: 0;
+    }
+
+    .brand p {
+      margin: 0;
+      max-width: 68ch;
+      color: var(--muted);
+      font-size: clamp(14px, 1.7vw, 17px);
+      line-height: 1.58;
+    }
+
+    .readout {
+      width: min(380px, 34vw);
+      padding: 16px;
+      border: 1px solid rgba(255, 200, 87, 0.22);
+      background: var(--panel);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+      backdrop-filter: blur(14px);
+      pointer-events: auto;
+    }
+
+    .readout h2 {
+      margin: 8px 0 10px;
+      font-size: 22px;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .readout p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .source {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      margin-top: 14px;
+      padding: 5px 9px;
+      border: 1px solid rgba(120, 224, 255, 0.28);
+      color: var(--text);
+      font: 12px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      text-decoration: none;
+      background: rgba(120, 224, 255, 0.06);
+    }
+
+    .source:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--amber);
+      outline-offset: 3px;
+    }
+
+    .modules {
+      right: 18px;
+      top: 210px;
+      width: min(340px, 31vw);
+      padding: 14px;
+      border: 1px solid rgba(120, 224, 255, 0.18);
+      background: rgba(4, 10, 16, 0.64);
+      backdrop-filter: blur(12px);
+      pointer-events: auto;
+    }
+
+    .module-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .module-item {
+      display: grid;
+      grid-template-columns: 10px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      min-height: 34px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(120, 224, 255, 0.12);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .module-item:last-child {
+      border-bottom: 0;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--cyan);
+    }
+
+    .count {
+      font: 12px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: var(--text);
+    }
+
+    .bottom-console {
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%);
+      width: min(760px, calc(100vw - 36px));
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid rgba(105, 240, 174, 0.2);
+      background: rgba(5, 12, 18, 0.78);
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.46);
+      backdrop-filter: blur(14px);
+      pointer-events: auto;
+    }
+
+    .status-line {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items: center;
+      min-width: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .pulse {
+      width: 12px;
+      height: 12px;
+      border: 1px solid var(--green);
+      animation: pulse 1.8s ease-out infinite;
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    button {
+      min-width: 42px;
+      min-height: 38px;
+      border: 1px solid rgba(120, 224, 255, 0.28);
+      background: rgba(120, 224, 255, 0.08);
+      color: var(--text);
+      font: 13px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      cursor: pointer;
+    }
+
+    button:hover,
+    button[aria-pressed="true"] {
+      border-color: rgba(255, 200, 87, 0.75);
+      background: rgba(255, 200, 87, 0.16);
+    }
+
+    .node-tip {
+      position: absolute;
+      z-index: 3;
+      min-width: 150px;
+      max-width: 260px;
+      padding: 10px 11px;
+      border: 1px solid rgba(255, 79, 216, 0.35);
+      background: rgba(5, 9, 15, 0.92);
+      color: var(--text);
+      font-size: 12px;
+      line-height: 1.35;
+      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
+      transform: translate(-50%, calc(-100% - 18px));
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 160ms ease;
+    }
+
+    .node-tip strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--magenta);
+      font-size: 13px;
+    }
+
+    .node-tip.visible {
+      opacity: 1;
+    }
+
+    .scanline {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: linear-gradient(180deg, transparent, rgba(120, 224, 255, 0.08), transparent);
+      height: 18vh;
+      animation: scan 5.2s linear infinite;
+      mix-blend-mode: screen;
+      opacity: 0.5;
+    }
+
+    @keyframes scan {
+      from { transform: translateY(-24vh); }
+      to { transform: translateY(108vh); }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.8); opacity: 1; }
+      70% { transform: scale(1.8); opacity: 0; }
+      100% { transform: scale(1.8); opacity: 0; }
+    }
+
+    @media (max-width: 860px) {
+      body {
+        overflow: auto;
+      }
+
+      #app {
+        min-height: 980px;
+        overflow-x: hidden;
+      }
+
+      .topline {
+        grid-template-columns: 1fr;
+        left: 14px;
+        right: auto;
+        width: calc(100vw - 28px);
+      }
+
+      .brand,
+      .readout,
+      .modules {
+        width: calc(100vw - 28px);
+        max-width: none;
+        min-width: 0;
+      }
+
+      .readout {
+        justify-self: stretch;
+      }
+
+      .modules {
+        top: auto;
+        left: 14px;
+        right: auto;
+        bottom: 110px;
+      }
+
+      .bottom-console {
+        grid-template-columns: 1fr;
+        left: 14px;
+        right: auto;
+        width: calc(100vw - 28px);
+        transform: none;
+      }
+
+      .controls {
+        justify-content: space-between;
+      }
+
+      h1 {
+        max-width: 100%;
+        font-size: clamp(38px, 13vw, 52px);
+        line-height: 0.96;
+        overflow-wrap: anywhere;
+      }
+
+      .brand p,
+      .readout p,
+      .status-line span:last-child {
+        overflow-wrap: anywhere;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main id="app" aria-label="KlakMath knowledge graph">
+    <canvas id="scene"></canvas>
+    <div class="scanline" aria-hidden="true"></div>
+
+    <section class="hud topline" aria-label="KlakMath overview">
+      <div class="brand">
+        <div class="kicker">UNITY.MATHEMATICS / KNOWLEDGE GLOBE</div>
+        <h1>KlakMath</h1>
+        <p>
+          แผนที่ความรู้จาก repo `keijiro/KlakMath`: tween, noise, hash, random sampling,
+          rotation และ demo scenes ถูกจัดเป็น nodes รอบโลก เพื่อให้คนทำเว็บเรียน Unity math
+          ผ่านภาพและ interaction ที่คุ้นมือกว่า hierarchy ใน Unity Editor
+        </p>
+        <a class="source" href="https://github.com/keijiro/KlakMath" target="_blank" rel="noreferrer">github.com/keijiro/KlakMath</a>
+      </div>
+
+      <article class="readout" aria-live="polite">
+        <div class="readout-label">SELECTED NODE</div>
+        <h2 id="selected-title">Unity.Mathematics</h2>
+        <div class="node-type" id="selected-type">package core</div>
+        <p id="selected-copy">
+          แกนกลางของ KlakMath คือการต่อยอด Unity.Mathematics ด้วย helper เล็ก ๆ ที่เอาไปใช้กับ motion,
+          procedural generation และ deterministic sampling ได้ทันที
+        </p>
+      </article>
+    </section>
+
+    <aside class="hud modules" aria-label="KlakMath modules">
+      <div class="readout-label">MODULE TELEMETRY</div>
+      <div class="module-list" id="module-list"></div>
+    </aside>
+
+    <section class="hud bottom-console" aria-label="Knowledge graph controls">
+      <div class="status-line">
+        <span class="pulse" aria-hidden="true"></span>
+        <span id="status-copy">orbit stable · hover nodes · drag globe · 413064b indexed</span>
+      </div>
+      <div class="controls">
+        <button type="button" data-mode="orbit" aria-pressed="true" title="Orbit">ORB</button>
+        <button type="button" data-mode="pulse" aria-pressed="false" title="Pulse">PLS</button>
+        <button type="button" data-mode="focus" aria-pressed="false" title="Focus">FCS</button>
+      </div>
+    </section>
+
+    <div class="node-tip" id="node-tip" role="status"></div>
+  </main>
+
+  <script type="module">
+    import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
+
+    const canvas = document.querySelector("#scene");
+    const app = document.querySelector("#app");
+    const selectedTitle = document.querySelector("#selected-title");
+    const selectedType = document.querySelector("#selected-type");
+    const selectedCopy = document.querySelector("#selected-copy");
+    const statusCopy = document.querySelector("#status-copy");
+    const moduleList = document.querySelector("#module-list");
+    const tip = document.querySelector("#node-tip");
+    const buttons = [...document.querySelectorAll("button[data-mode]")];
+
+    const palette = {
+      cyan: 0x78e0ff,
+      amber: 0xffc857,
+      magenta: 0xff4fd8,
+      green: 0x69f0ae,
+      white: 0xeef8ff
+    };
+
+    const nodes = [
+      { id: "core", label: "Unity.Mathematics", type: "package core", group: "Core", color: palette.cyan, lat: 12, lon: -20, copy: "KlakMath เป็น extension library บน Unity.Mathematics รุ่น package 2.1.1 สำหรับ Unity 2022.3+" },
+      { id: "exp", label: "ExpTween", type: "stateless smoothing", group: "Tween", color: palette.amber, lat: 28, lon: 42, copy: "exponential interpolation สำหรับ float/vector/quaternion ใช้ง่ายเมื่อไม่ต้องเก็บ velocity state" },
+      { id: "cds", label: "CdsTween", type: "critically damped spring", group: "Tween", color: palette.amber, lat: -18, lon: 64, copy: "spring interpolation ที่ถือ state เป็น (x, v) เหมาะกับ motion ที่อยากได้ response นุ่มและมีแรงเฉื่อย" },
+      { id: "noise", label: "Noise", type: "gradient and fractal noise", group: "Noise", color: palette.magenta, lat: 44, lon: -112, copy: "1D gradient noise, vector noise และ fractal helpers ใช้ seed + XXHash เพื่อให้ deterministic" },
+      { id: "fractal", label: "FractalRotation", type: "noise rotation", group: "Noise", color: palette.magenta, lat: -36, lon: -136, copy: "ต่อยอด noise เป็น rotation ผ่าน quaternion.EulerZXY เพื่อทำ procedural motion" },
+      { id: "hash", label: "XXHash", type: "deterministic PRNG", group: "Hash", color: palette.green, lat: 8, lon: 150, copy: "hash struct ที่แปลง seed + data เป็น uint/int/float/bool/vector แบบ deterministic" },
+      { id: "sphere", label: "InSphere", type: "geometry sampling", group: "Hash", color: palette.green, lat: 54, lon: 122, copy: "sample จุดใน sphere ด้วย distribution ที่ถูกต้อง ใช้ใน demo เพื่อวาด point cloud" },
+      { id: "random", label: "RandomExtensions", type: "Unity Random helpers", group: "Random", color: palette.cyan, lat: -52, lon: 118, copy: "เพิ่ม NextFloat2OnDisk และ NextFloat3InSphere ให้ Unity.Mathematics.Random" },
+      { id: "rotation", label: "Rotation.FromTo", type: "quaternion helper", group: "Rotation", color: palette.amber, lat: 2, lon: -170, copy: "สร้าง quaternion จาก vector หนึ่งไปอีก vector ด้วย cross/dot product และ normalizesafe" },
+      { id: "demos", label: "Demo Scenes", type: "Unity samples", group: "Demos", color: palette.white, lat: -8, lon: -72, copy: "Assets/Noise, Random, Tween, XXHash แสดงวิธีใช้ runtime API ผ่าน MonoBehaviour scripts" },
+      { id: "upm", label: "UPM Package", type: "jp.keijiro.klak.math", group: "Package", color: palette.white, lat: 62, lon: -6, copy: "package.json ระบุ dependency หลักคือ com.unity.mathematics 1.2.6 และ license เป็น Unlicense" }
+    ];
+
+    const links = [
+      ["core", "exp"], ["core", "cds"], ["core", "noise"], ["core", "hash"], ["core", "rotation"],
+      ["hash", "noise"], ["hash", "sphere"], ["hash", "random"], ["hash", "demos"],
+      ["noise", "fractal"], ["exp", "demos"], ["cds", "demos"], ["rotation", "demos"], ["upm", "core"]
+    ];
+
+    const modules = [...new Set(nodes.map((n) => n.group))].map((group) => ({
+      group,
+      count: nodes.filter((n) => n.group === group).length,
+      color: nodes.find((n) => n.group === group).color
+    }));
+
+    moduleList.innerHTML = modules.map((m) => `
+      <div class="module-item">
+        <span class="dot" style="color:#${m.color.toString(16).padStart(6, "0")};background:#${m.color.toString(16).padStart(6, "0")}"></span>
+        <span>${m.group}</span>
+        <span class="count">${String(m.count).padStart(2, "0")}</span>
+      </div>
+    `).join("");
+
+    let selected = nodes[0];
+    let mode = "orbit";
+
+    function setSelected(node) {
+      if (!node) return;
+      selected = node;
+      selectedTitle.textContent = node.label;
+      selectedType.textContent = node.type;
+      selectedCopy.textContent = node.copy;
+      statusCopy.textContent = `${node.group.toLowerCase()} link resolved · ${node.label} · source indexed`;
+    }
+
+    function setMode(next) {
+      mode = next;
+      buttons.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.mode === mode)));
+      statusCopy.textContent = mode === "focus"
+        ? "focus mode · selected node pulls the globe toward its module"
+        : mode === "pulse"
+          ? "pulse mode · signal intensity rising through concept arcs"
+          : "orbit stable · hover nodes · drag globe · 413064b indexed";
+    }
+
+    buttons.forEach((button) => button.addEventListener("click", () => setMode(button.dataset.mode)));
+
+    function initCanvasFallback() {
+      const ctx = canvas.getContext("2d");
+      const colorHex = (value) => `#${value.toString(16).padStart(6, "0")}`;
+      let rot = 0;
+      let pointerX = -9999;
+      let pointerY = -9999;
+
+      function resize2d() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = Math.floor(window.innerWidth * dpr);
+        canvas.height = Math.floor(window.innerHeight * dpr);
+        canvas.style.width = `${window.innerWidth}px`;
+        canvas.style.height = `${window.innerHeight}px`;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      function project(node, radius) {
+        const lat = node.lat * Math.PI / 180;
+        const lon = (node.lon * Math.PI / 180) + rot;
+        const x = Math.cos(lat) * Math.sin(lon);
+        const y = Math.sin(lat);
+        const z = Math.cos(lat) * Math.cos(lon);
+        return {
+          x: window.innerWidth / 2 + x * radius,
+          y: window.innerHeight / 2 + y * radius * 0.72,
+          z
+        };
+      }
+
+      function draw(timeMs) {
+        const t = timeMs * 0.001;
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        const radius = Math.min(w, h) * (w < 760 ? 0.26 : 0.31);
+        rot += mode === "focus" ? 0.004 : 0.002;
+        ctx.clearRect(0, 0, w, h);
+
+        ctx.save();
+        ctx.translate(w / 2, h / 2);
+        ctx.strokeStyle = "rgba(120,224,255,0.22)";
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 7; i++) {
+          ctx.beginPath();
+          ctx.ellipse(0, 0, radius, radius * (0.18 + i * 0.1), rot * 18 + i * 0.52, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(120,224,255,0.42)";
+        ctx.stroke();
+        ctx.restore();
+
+        const projected = new Map(nodes.map((node) => [node.id, project(node, radius)]));
+
+        links.forEach(([from, to], index) => {
+          const a = projected.get(from);
+          const b = projected.get(to);
+          const alpha = 0.18 + Math.max(0, (a.z + b.z) / 2) * 0.22;
+          ctx.strokeStyle = index % 3 === 0 ? `rgba(255,200,87,${alpha})` : `rgba(120,224,255,${alpha})`;
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.quadraticCurveTo(w / 2, h / 2 - radius * 0.62, b.x, b.y);
+          ctx.stroke();
+        });
+
+        let nearest = null;
+        let nearestDistance = 9999;
+        nodes.forEach((node, index) => {
+          const p = projected.get(node.id);
+          const visible = p.z > -0.35;
+          const size = (node === selected ? 8 : 5) + Math.sin(t * 2.5 + index) * 1.4;
+          const dist = Math.hypot(pointerX - p.x, pointerY - p.y);
+          if (visible && dist < nearestDistance) {
+            nearest = node;
+            nearestDistance = dist;
+          }
+          ctx.globalAlpha = visible ? 0.95 : 0.22;
+          ctx.fillStyle = colorHex(node.color);
+          ctx.shadowColor = colorHex(node.color);
+          ctx.shadowBlur = node === selected ? 24 : 14;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.shadowBlur = 0;
+          if (visible) {
+            ctx.font = "600 13px system-ui, sans-serif";
+            ctx.fillStyle = "#eef8ff";
+            ctx.fillText(node.label, p.x + 12, p.y + 5);
+          }
+        });
+        ctx.globalAlpha = 1;
+
+        if (nearest && nearestDistance < 28) setSelected(nearest);
+        requestAnimationFrame(draw);
+      }
+
+      canvas.addEventListener("pointermove", (event) => {
+        pointerX = event.clientX;
+        pointerY = event.clientY;
+      });
+      window.addEventListener("resize", resize2d);
+      resize2d();
+      setSelected(nodes[0]);
+      statusCopy.textContent = "2D fallback active · WebGL unavailable · knowledge graph preserved";
+      requestAnimationFrame(draw);
+    }
+
+    let renderer;
+    try {
+      const gl = canvas.getContext("webgl2", { antialias: true, alpha: true })
+        || canvas.getContext("webgl", { antialias: true, alpha: true });
+      if (gl) renderer = new THREE.WebGLRenderer({ canvas, context: gl, antialias: true, alpha: true });
+    } catch (error) {
+      renderer = null;
+    }
+
+    if (!renderer) {
+      initCanvasFallback();
+    }
+
+    if (renderer) {
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(48, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 0.5, 7.6);
+
+    const root = new THREE.Group();
+    scene.add(root);
+
+    const globe = new THREE.Mesh(
+      new THREE.SphereGeometry(2.15, 64, 64),
+      new THREE.MeshBasicMaterial({ color: 0x07131d, transparent: true, opacity: 0.92 })
+    );
+    root.add(globe);
+
+    const wire = new THREE.Mesh(
+      new THREE.SphereGeometry(2.18, 36, 18),
+      new THREE.MeshBasicMaterial({ color: palette.cyan, wireframe: true, transparent: true, opacity: 0.18 })
+    );
+    root.add(wire);
+
+    const equator = new THREE.Group();
+    root.add(equator);
+    for (let i = 0; i < 3; i++) {
+      const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(2.35 + i * 0.22, 0.006, 8, 160),
+        new THREE.MeshBasicMaterial({ color: i === 1 ? palette.amber : palette.cyan, transparent: true, opacity: 0.28 - i * 0.04 })
+      );
+      ring.rotation.x = Math.PI / 2 + i * 0.52;
+      ring.rotation.z = i * 0.8;
+      equator.add(ring);
+    }
+
+    const starGeo = new THREE.BufferGeometry();
+    const starPositions = [];
+    for (let i = 0; i < 900; i++) {
+      const r = 12 + Math.random() * 20;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(THREE.MathUtils.randFloatSpread(2));
+      starPositions.push(
+        r * Math.sin(phi) * Math.cos(theta),
+        r * Math.sin(phi) * Math.sin(theta),
+        r * Math.cos(phi)
+      );
+    }
+    starGeo.setAttribute("position", new THREE.Float32BufferAttribute(starPositions, 3));
+    scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0x8fb8c7, size: 0.018, transparent: true, opacity: 0.55 })));
+
+    function latLonToVector(lat, lon, radius = 2.42) {
+      const phi = THREE.MathUtils.degToRad(90 - lat);
+      const theta = THREE.MathUtils.degToRad(lon + 180);
+      return new THREE.Vector3(
+        -radius * Math.sin(phi) * Math.cos(theta),
+        radius * Math.cos(phi),
+        radius * Math.sin(phi) * Math.sin(theta)
+      );
+    }
+
+    function makeLabelTexture(label, color) {
+      const c = document.createElement("canvas");
+      c.width = 512;
+      c.height = 128;
+      const ctx = c.getContext("2d");
+      ctx.clearRect(0, 0, c.width, c.height);
+      ctx.font = "600 34px system-ui, sans-serif";
+      ctx.fillStyle = "#eef8ff";
+      ctx.shadowColor = `#${color.toString(16).padStart(6, "0")}`;
+      ctx.shadowBlur = 14;
+      ctx.fillText(label, 12, 70);
+      const tex = new THREE.CanvasTexture(c);
+      tex.needsUpdate = true;
+      return tex;
+    }
+
+    const nodeMeshes = [];
+    const nodeById = new Map();
+    const labelGroup = new THREE.Group();
+    root.add(labelGroup);
+
+    nodes.forEach((node) => {
+      const position = latLonToVector(node.lat, node.lon);
+      node.position = position;
+      nodeById.set(node.id, node);
+
+      const marker = new THREE.Mesh(
+        new THREE.SphereGeometry(0.072, 18, 18),
+        new THREE.MeshBasicMaterial({ color: node.color })
+      );
+      marker.position.copy(position);
+      marker.userData.node = node;
+      root.add(marker);
+      nodeMeshes.push(marker);
+
+      const halo = new THREE.Mesh(
+        new THREE.SphereGeometry(0.145, 18, 18),
+        new THREE.MeshBasicMaterial({ color: node.color, transparent: true, opacity: 0.18 })
+      );
+      halo.position.copy(position);
+      halo.userData.node = node;
+      root.add(halo);
+      nodeMeshes.push(halo);
+      node.halo = halo;
+
+      const sprite = new THREE.Sprite(
+        new THREE.SpriteMaterial({ map: makeLabelTexture(node.label, node.color), transparent: true, opacity: 0.8 })
+      );
+      sprite.position.copy(position.clone().multiplyScalar(1.12));
+      sprite.scale.set(1.1, 0.28, 1);
+      labelGroup.add(sprite);
+    });
+
+    function makeArc(a, b, color) {
+      const mid = a.clone().add(b).normalize().multiplyScalar(3.35);
+      const curve = new THREE.QuadraticBezierCurve3(a, mid, b);
+      const points = curve.getPoints(80);
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      const material = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.34 });
+      const line = new THREE.Line(geometry, material);
+      line.userData.phase = Math.random() * Math.PI * 2;
+      return line;
+    }
+
+    const arcGroup = new THREE.Group();
+    links.forEach(([from, to], index) => {
+      const a = nodeById.get(from).position;
+      const b = nodeById.get(to).position;
+      const color = index % 4 === 0 ? palette.amber : index % 4 === 1 ? palette.cyan : index % 4 === 2 ? palette.magenta : palette.green;
+      arcGroup.add(makeArc(a, b, color));
+    });
+    root.add(arcGroup);
+
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2(-10, -10);
+    let dragging = false;
+    let lastX = 0;
+    let lastY = 0;
+    let targetRotX = -0.18;
+    let targetRotY = 0.46;
+
+    app.addEventListener("pointermove", (event) => {
+      const rect = canvas.getBoundingClientRect();
+      pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      pointer.y = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
+      tip.style.left = `${event.clientX}px`;
+      tip.style.top = `${event.clientY}px`;
+
+      if (dragging) {
+        const dx = event.clientX - lastX;
+        const dy = event.clientY - lastY;
+        targetRotY += dx * 0.006;
+        targetRotX += dy * 0.004;
+        targetRotX = THREE.MathUtils.clamp(targetRotX, -0.9, 0.9);
+        lastX = event.clientX;
+        lastY = event.clientY;
+      }
+    });
+
+    app.addEventListener("pointerdown", (event) => {
+      dragging = true;
+      lastX = event.clientX;
+      lastY = event.clientY;
+    });
+
+    window.addEventListener("pointerup", () => {
+      dragging = false;
+    });
+
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    function animate(timeMs) {
+      const t = timeMs * 0.001;
+      requestAnimationFrame(animate);
+
+      if (!dragging && mode === "orbit") targetRotY += 0.0016;
+      if (mode === "focus" && selected) {
+        targetRotY += 0.0008;
+        targetRotX = THREE.MathUtils.lerp(targetRotX, -selected.position.y * 0.08, 0.02);
+      }
+
+      root.rotation.x = THREE.MathUtils.lerp(root.rotation.x, targetRotX, 0.08);
+      root.rotation.y = THREE.MathUtils.lerp(root.rotation.y, targetRotY, 0.08);
+      equator.rotation.z = t * 0.08;
+
+      nodeMeshes.forEach((mesh, i) => {
+        if (mesh.userData.node && mesh.userData.node.halo === mesh) {
+          const hot = mesh.userData.node === selected ? 1.45 : 1;
+          const pulse = 1 + Math.sin(t * 2.4 + i) * 0.12;
+          mesh.scale.setScalar(hot * pulse);
+          mesh.material.opacity = mesh.userData.node === selected ? 0.34 : 0.16;
+        }
+      });
+
+      arcGroup.children.forEach((line, i) => {
+        const base = mode === "pulse" ? 0.45 : 0.28;
+        line.material.opacity = base + Math.sin(t * 2 + line.userData.phase + i * 0.33) * 0.1;
+      });
+
+      raycaster.setFromCamera(pointer, camera);
+      const hits = raycaster.intersectObjects(nodeMeshes, false);
+      if (hits.length) {
+        const node = hits[0].object.userData.node;
+        setSelected(node);
+        tip.innerHTML = `<strong>${node.label}</strong>${node.type}<br>${node.group}`;
+        tip.classList.add("visible");
+      } else {
+        tip.classList.remove("visible");
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    setSelected(nodes[0]);
+    requestAnimationFrame(animate);
+    }
+  </script>
+</body>
+</html>
