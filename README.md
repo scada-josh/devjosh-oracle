@@ -1,4 +1,3 @@
 # devjosh-oracle
 
-- Hello World, สวัสดี
-- Hello World
+- Hello 26 July
